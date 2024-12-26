@@ -1,6 +1,4 @@
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
 
 # Sample data for emission factors (in kg CO2 per unit)
 emission_factors = {
@@ -31,22 +29,21 @@ def calculate_offset_cost(emissions, offset_type):
     cost_per_ton = offset_costs.get(offset_type, 0)
     return emissions * cost_per_ton
 
-# Streamlit UI
+# Streamlit UI elements
 st.title("Carbon Offset Calculator")
 
-# Getting user input
+# Input fields for various activities
 electricity = st.number_input("Electricity (kWh):", min_value=0.0, value=0.0)
 gasoline = st.number_input("Gasoline (liters):", min_value=0.0, value=0.0)
 diesel = st.number_input("Diesel (liters):", min_value=0.0, value=0.0)
 waste = st.number_input("Waste (kg):", min_value=0.0, value=0.0)
 
-# Select box for offset type
-offset_type = st.radio("Choose Offset Type:", 
-                       options=["Reforestation", "Renewable Energy", "Methane Capture"])
+# Dropdown for selecting offset type
+offset_type = st.selectbox("Choose Offset Type:", ["Reforestation", "Renewable Energy", "Methane Capture"])
 
 # Button to calculate the results
 if st.button("Calculate"):
-    # Activities dictionary
+    # Prepare activities data
     activities = {
         "Electricity (kWh)": electricity,
         "Gasoline (liters)": gasoline,
@@ -54,39 +51,10 @@ if st.button("Calculate"):
         "Waste (kg)": waste,
     }
     
-    # Calculate the carbon footprint
+    # Calculate carbon footprint
     emissions = calculate_carbon_footprint(activities)
     st.write(f"Total CO2 Emissions: {emissions:.2f} tons")
     
-    # Calculate the offset cost
+    # Calculate offset cost
     offset_cost = calculate_offset_cost(emissions, offset_type)
-    st.write(f"Offset Cost for {offset_type}: ${offset_cost:.2f}")
-    
-    # Create a bar chart for emission breakdown
-    emission_values = [electricity * emission_factors["Electricity (kWh)"], 
-                       gasoline * emission_factors["Gasoline (liters)"], 
-                       diesel * emission_factors["Diesel (liters)"], 
-                       waste * emission_factors["Waste (kg)"]]
-    
-    activities_names = list(activities.keys())
-    
-    # Plot emissions by activity
-    fig, ax = plt.subplots()
-    ax.bar(activities_names, emission_values, color='green')
-    ax.set_ylabel('CO2 Emissions (kg)')
-    ax.set_title('CO2 Emissions by Activity')
-    st.pyplot(fig)
-    
-    # Save results as CSV file
-    results = pd.DataFrame({
-        'Activity': activities_names,
-        'Amount': list(activities.values()),
-        'Emission (kg CO2)': emission_values
-    })
-    
-    st.download_button(
-        label="Download Results",
-        data=results.to_csv(index=False),
-        file_name='carbon_footprint_results.csv',
-        mime='text/csv'
-    )
+    st.write(f"Offset Cost ({offset_type}): ${offset_cost:.2f}")
