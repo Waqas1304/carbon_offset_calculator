@@ -118,7 +118,7 @@ if st.button("Calculate CO2 Emissions"):
         st.info(f"☺️ CO2 Saved: {abs(CO2_Saving)} tonnes CO2 per year")
 
     # Carbon offset calculation
-st.subheader("Calculate your Carbon Offset Cost")
+    st.subheader("Calculate your Carbon Offset Cost")
     offset_type = st.selectbox("Choose Offset Method:", list(OFFSET_COSTS.keys()))
 
     offset_cost_per_ton = OFFSET_COSTS[offset_type]
